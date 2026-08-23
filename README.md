@@ -1,288 +1,310 @@
-<h1 align="center">Buzz 🐝</h1>
-
 <p align="center">
-  <strong>A workspace where humans and agents build together, on a relay you own.</strong>
+  <img src="docs/assets/st8wrx-wordmark.svg" alt="ST8WRX" width="720">
 </p>
 
 <p align="center">
-  <a href="VISION.md">Vision</a> ·
-  <a href="VISION_SOVEREIGN.md">Sovereign</a> ·
-  <a href="VISION_PROJECTS.md">Forge</a> ·
-  <a href="VISION_AGENT.md">Agents</a> ·
-  <a href="ARCHITECTURE.md">Architecture</a> ·
-  <a href="RELEASING.md">Releasing</a> ·
+  <strong>An AI-native venture creation network for people, agents, compute, and capital.</strong>
+</p>
+
+<p align="center">
+  <a href="docs/st8wrx/ARCHITECTURE.md">Architecture</a> ·
+  <a href="docs/st8wrx/BRAND.md">Brand</a> ·
+  <a href="docs/st8wrx/UPSTREAM.md">Upstream strategy</a> ·
+  <a href="ARCHITECTURE.md">Buzz architecture</a> ·
   <a href="LICENSE">Apache 2.0</a>
 </p>
 
-<p align="center">
-  <img src="docs/assets/screenshots/channel-thread.png" alt="A Buzz project channel where people and an agent coordinate on a release plan" width="100%">
-</p>
+---
 
-<p align="center">
-  <sub><em>People and agents building together in the same room.</em></sub>
-</p>
+# ST8WRX
+
+ST8WRX is a platform where humans and AI agents can assemble around ideas, contribute code and expertise, share compute, build products together, prove who contributed what, and launch or transact around what they create.
+
+The platform is built on the open-source **Buzz** collaboration substrate from Block. Buzz already provides the hard collaborative layer: signed Nostr identities, projects, Git hosting, workflows, agent execution, search, audit, desktop/mobile clients, voice, and shared compute through Buzz Mesh.
+
+ST8WRX adds the missing economic and venture layer:
+
+- project-scoped contribution accounting
+- human, agent, and compute attribution
+- shared-compute metering and settlement
+- project agreements and governance
+- durable provenance on Bitcoin SV
+- project treasuries, payments, bounties, and licensing
+- optional BSV-native project assets
+- a market for projects, products, compute, agents, APIs, licenses, and bounties
+
+The design rule is simple:
+
+> **Buzz handles live collaboration. ST8WRX handles contribution and economics. BSV handles durable proof and settlement.**
 
 ---
 
-## What is this, really?
+## Why this exists
 
-Buzz is a self-hostable workspace where humans and AI agents share the same rooms.
+AI has collapsed the cost of creating software. Small teams can now build systems that previously required dozens of engineers, but coordination after the idea stage is still fragmented.
 
-A Buzz **community** is the workspace a user reaches by URL. In the single-relay
-setup that ships today, the relay URL selects exactly one community. A hosted
-operator can serve many communities behind many domains or subdomains, but the
-client-facing rule stays the same: the URL is authoritative for the workspace,
-and all tenant-observable state under that URL is community-local.
+A developer may bring architecture. Another brings a workstation. Another brings distribution. Several agents may write, test, research, review, or operate. The hard questions become:
 
-It's a Nostr relay: every message, reaction, workflow step, review approval, and git event is a signed event in one log. Same shape, same identity model, same audit trail, whether the author is a person or a process.
+- Who contributed what?
+- Which work actually mattered?
+- Which machine supplied compute?
+- Which agent produced or reviewed an artifact?
+- What project rules were in force when a contribution was accepted?
+- Who should participate when a project earns revenue, licenses IP, or is acquired?
+- Can any of that history be independently verified later?
 
-In practice it feels like a team workspace. Under the hood it's an event log with taste and a suspicious number of Rust crates.
-
-Yes, it's another AI-adjacent developer tool. We're sorry. The difference is what agents can actually *do* once they're inside: open repos, send patches, review code, run workflows, edit canvases, orchestrate other agents, drop into voice huddles, create channels, and pull in whoever needs to see it. The same affordances as a human teammate, the same audit trail, a different keypair.
-
----
-
-## Stuff you do in Buzz
-
-- **Ask the project a question and get an answer with receipts.** Agents search six months of history and post the threads, not vibes.
-- **Let an agent triage a bug without giving it the keys to the kingdom.** Agents have their own keys, their own channel memberships, and their own audit trail. Scoped by identity, not by permission flags — the same way you'd scope a teammate.
-- **Turn a feature branch into a room** where patches, CI, review, and the merge decision live together — so the channel becomes the record of why the code exists.
-- **Search the conversation, the patch, the workflow run, and the approval in one place** — because they're all the same kind of event.
-- **Let an agent run the workspace, not just talk in it.** Channels, canvases, workflows, huddles — agents have the same surface area as humans, with their own keys and their own audit trail.
+ST8WRX is designed around those questions.
 
 ---
 
-## A look inside
+## Core loop
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <img src="docs/assets/screenshots/channel-agents.png" alt="People and agents collaborating in a Buzz engineering channel and reacting with emoji" width="100%"><br>
-      <sub><strong>Agents are members, not bots.</strong> Add an agent to a channel the same way you add a person.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <img src="docs/assets/screenshots/create-channel.png" alt="The Add a channel dialog with search, filters, and channels to join or create" width="100%"><br>
-      <sub><strong>Spin up a room in seconds.</strong> Name it, describe it, make it private.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2" valign="top">
-      <img src="docs/assets/screenshots/media-comments.png" alt="A video playing in Buzz with frame-anchored comments in a side panel" width="100%"><br>
-      <sub><strong>Media you can talk about.</strong> Leave comments pinned to specific frames.</sub>
-    </td>
-  </tr>
-</table>
+**DISCOVER → ASSEMBLE → BUILD → PROVE → LAUNCH → EARN → REINVEST**
 
----
+### Discover
 
-## Why Buzz is better
+Browse active projects, available work, agents, compute, and finished products.
 
-One community. One identity model. One event log. Humans, agents, workflows, and repos all speak the same protocol, sign with the same kind of key, and end up in the same search index. In the default self-hosted deployment, one relay hosts one community; in a hosted multi-tenant deployment, each community keeps that same semantic boundary even when the backend shares Postgres, Redis, and object storage.
+### Assemble
 
-The bet is that one community can do what teams currently fake with chat, forges, bots, CI dashboards, release tools, search indexes, and a pile of glue code. Not all at once, not magically, but with one substrate instead of seven tabs pretending they know about each other.
+Create a project and bring together people, agents, machines, IP, and eventually capital.
 
-Agents are part of the room, not haunted cron jobs.
+### Build
 
----
+Use the existing Buzz workspace: projects, repositories, branches, channels, workflows, agents, Huddles, canvases, search, and Mesh compute.
 
-## Three little stories
+### Prove
 
-**Incident memory.** It's 2am. You type *"have we seen this error before?"* An agent watching the channel pulls six months of history, posts the threads, the root causes, the fixes, and offers to page whoever shipped the last one. The whole exchange — question, answer, evidence — stays in the channel.
+ST8WRX correlates signed project evidence into grounded contribution records and project decisions.
 
-**Branch as room.** You open a feature branch. A channel appears. Patches land as NIP-34 events, CI posts results, an agent runs a first-pass review, teammates react to the parts they care about, and the merge decision lands in the same room as the evidence.
+### Launch
 
-**A release that writes itself.** A workflow fires on a tag. An agent reads the merged PRs from the project channels, drafts the release notes, posts them for human review, gets a 👍 reaction, and ships. Every step signed. Every step searchable.
+A project can sell, license, operate, open-source, raise growth capital, or launch a BSV-native application economy where appropriate.
 
----
+### Earn
 
-## Works today · Being wired up · Strong opinions, pending code
-
-| ✅ Works today | 🚧 Being wired up | 💭 Strong opinions, pending code |
-|---|---|---|
-| Relay, channels, threads, DMs, canvases, media, search, audit log | Mobile clients (iOS + Android, Flutter) | Web-of-trust reputation across relays |
-| Desktop app (Tauri + React) | Workflow approval gates (infra exists, glue still drying) | Push notifications |
-| `buzz-cli` (agent-first, JSON in / JSON out) + ACP harness (Goose, Codex, Claude Code) | Huddle lifecycle events | Culture features |
-| YAML workflows: message / reaction / schedule / webhook triggers | | |
-| Git events (NIP-34: patches, repo announcements, status) | | |
-| Git hosting backend | | |
-
-<sub>Please do not plan your compliance program around the 💭 column yet. The <a href="VISION.md">VISION docs</a> are the long version of what we think this becomes.</sub>
-
----
-
-## Getting started
-
-New to Buzz? Pick the path that matches you.
-
-### I just want to try the app
-
-Grab a packaged build from the [latest release](https://github.com/block/buzz/releases/latest):
-
-| Platform | File |
-|---|---|
-| macOS (Apple Silicon) | `Buzz_<version>_aarch64.dmg` |
-| macOS (Intel) | `Buzz_<version>_x64.dmg` |
-| Linux (x86_64) | `Buzz_<version>_amd64.AppImage` or `Buzz_<version>_amd64.deb` |
-| Windows (x64) | `Buzz_<version>_x64-setup_alpha-unsigned.exe` |
-
-On a Mac, check the Apple menu > About This Mac: "Chip: Apple …" means Apple Silicon; "Processor: Intel …" means Intel.
-
-The Windows build is not code-signed, so SmartScreen may show "Windows protected your PC" on first launch. If available, click **More info**, then **Run anyway**.
-
-
-By default the app connects to `ws://localhost:3000`. To point it at a relay you're running or one someone shared with you, set `BUZZ_RELAY_URL` before launching, or switch the relay from inside the app. If you don't have a relay yet, follow **Build & run from source** below to stand one up locally.
-
-### I want my own hosted relay
-
-To run a relay for your team without managing servers, you can deploy one to Railway in a click:
-
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/buzz-relay-block)
-
-See [here](https://engineering.block.xyz/blog/run-your-own-buzz-relay) for details.
-
-### I work at Block
-
-Don't build from source, and don't use the OSS release — use the internal build. It comes pre-wired to the Block relay and agent provider, so it works out of the box with nothing to configure.
-
-Download the latest build from [`squareup/buzz-releases` releases](https://github.com/squareup/buzz-releases/releases/latest) and install it.
-
-### I want to build & run from source
-
-See **Quick start** below — this is the developer / self-host path.
-
----
-
-## Quick start
-
-You'll need [Docker](https://docs.docker.com/get-docker/) and [Hermit](https://cashapp.github.io/hermit/) (or Rust 1.88+, Node 24+, pnpm 10+, `just`).
-
-**Once:**
-```bash
-git clone https://github.com/block/buzz.git && cd buzz
-. ./bin/activate-hermit   # pinned toolchain (tools auto-download on first use)
-just setup && just build
-```
-
-`just setup` runs `just bootstrap` automatically — it copies `.env.example` to `.env` if needed, downloads all required tools via Hermit, and starts Docker services + migrations.
-
-**Every day:**
-```bash
-. ./bin/activate-hermit
-just dev   # starts the relay + desktop app together
-```
-
-Relay on `ws://localhost:3000`. Desktop app pops up. You're in.
-
-For a split-terminal workflow (relay logs separate from Vite output), use `just relay` in one terminal and `just desktop-dev` in another.
-
-Want a single-node / VPS relay instead of the local-dev stack? Use the production Compose bundle in [`deploy/compose/`](deploy/compose/README.md) (`docker compose` + Postgres, Redis, MinIO, optional Caddy/TLS). The root [`docker-compose.yml`](docker-compose.yml) is for day-to-day development only.
-
-For agents, set `BUZZ_PRIVATE_KEY` and use [`buzz-cli`](crates/buzz-cli) — JSON in, JSON out, designed for LLM tool calls.
-
----
-
-## Windows prerequisites
-
-The agent shell tool runs commands under bash. On macOS and Linux that's already there; on Windows you need to bring it.
-
-Install [Git for Windows](https://git-scm.com/download/win) — it ships Git Bash, which is what buzz resolves at runtime. Once it's installed, everything works the same as on other platforms.
-
-If you'd rather point buzz at a different bash-compatible shell, set `BUZZ_SHELL` to its path (e.g. `BUZZ_SHELL=C:\path\to\bash.exe`). The agent's tool description updates automatically to reflect whichever shell is active.
+Revenue, bounties, compute payments, licenses, or acquisition proceeds can be distributed according to explicit project rules.
 
 ---
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                             Clients                                     │
-│  Human client         AI agent              CLI / scripts               │
-│  (Buzz desktop)       (Goose, Codex, ...)   (buzz-cli, agents)          │
-│       │               ┌──────────────┐               │                  │
-│       │               │  buzz-acp  │                 │                  │
-│       │               │  (ACP ↔ MCP) │               │                  │
-│       │               └──────┬───────┘               │                  │
-│       │                      │                       │                  │
-└───────┼──────────────────────┼───────────────────────┼──────────────────┘
-        │ WebSocket            │ WS + REST             │ WS + REST
-        ▼                      ▼                       ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                          buzz-relay                                     │
-│  NIP-01 · NIP-42 auth · channel/DM/media/workflow/git REST · audit log  │
-└───┬──────────────────────────┬──────────────────────────┬───────────────┘
-    │                          │                          │
- ┌──▼───────────┐       ┌──────▼──────┐           ┌───────▼─────┐
- │   Postgres   │       │    Redis    │           │   S3/MinIO  │
- │ (events +    │       │  (pub/sub)  │           │  (Blossom)  │
- │  FTS search) │       └─────────────┘           └─────────────┘
- └──────────────┘
+```text
+Humans / Agents / Compute / IP / Capital
+                  │
+                  ▼
+                BUZZ
+     Projects / Git / Workflows / Mesh
+                  │
+                  ▼
+             ST8WRX PROTOCOL
+ Contribution / Metering / Agreements / Market
+                  │
+                  ▼
+                 BSV
+ Provenance / Settlement / Assets / Contracts
 ```
 
-A Rust workspace of focused crates. Single source of truth: the relay. See [ARCHITECTURE.md](ARCHITECTURE.md) for the full breakdown.
+### Buzz remains the workspace
 
-<details>
-<summary><strong>Crate map</strong></summary>
+Buzz is the high-frequency system of record for collaboration. Messages, Git actions, agent jobs, workflows, project activity, and working state do **not** wait for blockchain settlement.
 
-**Core protocol** — `buzz-core` (zero-I/O types, NIP-01 filters, Schnorr verify) · `buzz-relay` (Axum WS + REST)
+### ST8WRX is the economic protocol
 
-**Services** — `buzz-db` (Postgres) · `buzz-auth` (NIP-42/98 Schnorr auth, rate limiting) · `buzz-pubsub` (Redis, presence, typing) · `buzz-search` (Postgres FTS) · `buzz-audit` (hash-chain log). Multi-community mode scopes tenant-observable rows, cache keys, search documents, workflow state, media metadata, git repo pointers, and audit chains by the host-derived community; shared infrastructure is an implementation detail, not a user-visible global workspace.
+ST8WRX turns project evidence into project-scoped contribution state, compute accounting, agreements, and eventually market/economic activity.
 
-**Agent surface** — `buzz-cli` (agent-first CLI, JSON in / JSON out) · `buzz-acp` (ACP harness for Goose/Codex/Claude Code) · `buzz-agent` (ACP agent — see [VISION_AGENT.md](VISION_AGENT.md)) · `buzz-dev-mcp` (shell + file-edit tools) · `buzz-workflow` (YAML automation) · `buzz-persona` (agent persona packs)
+### BSV is the durable economic layer
 
-**Git & pairing** — `git-sign-nostr` / `git-credential-nostr` (nostr-signed git) · `buzz-pair-relay` / `buzz-pairing-cli` (relay pairing)
+Bitcoin SV is used selectively for:
 
-**Shared** — `buzz-sdk` (typed event builders) · `buzz-media` (Blossom/S3)
+- provenance anchors
+- settlement
+- signed agreement proofs
+- smart-contract state
+- project-native assets where real utility exists
+- selected permanent public artifacts
 
-**Tooling** — `buzz-admin` (admin CLI) · `buzz-test-client` (E2E)
+Private source, prompts, credentials, and sensitive data are not placed on a public chain by default.
 
-</details>
+See [`docs/st8wrx/ARCHITECTURE.md`](docs/st8wrx/ARCHITECTURE.md) for the full design.
 
 ---
 
-## Going further
+## Existing substrate we inherit from Buzz
 
-- **[VISION.md](VISION.md)** · **[VISION_SOVEREIGN.md](VISION_SOVEREIGN.md)** · **[VISION_PROJECTS.md](VISION_PROJECTS.md)** · **[VISION_AGENT.md](VISION_AGENT.md)** — the four vision docs
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** — system design, kind ranges, subsystem boundaries
-- **[TESTING.md](TESTING.md)** — multi-agent E2E test suite
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** · **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** · **[SECURITY.md](SECURITY.md)** · **[GOVERNANCE.md](GOVERNANCE.md)**
+The current upstream already gives ST8WRX a substantial head start:
 
-<details>
-<summary><strong>Configuration</strong> (env vars, defaults work for local dev)</summary>
+- Nostr/secp256k1 identities for humans and agents
+- multi-community relay architecture
+- Projects / NIP-MP
+- Git hosting and NIP-34 project events
+- agent teams and personas
+- durable agent turn metrics
+- MCP / ACP agent tooling
+- workflows and approval infrastructure
+- search and audit
+- desktop and mobile clients
+- Huddles
+- **Buzz Mesh**, where opted-in member hardware becomes shared AI compute
 
-All defaults work out of the box. Override via `.env`. Full reference in [`.env.example`](.env.example).
+ST8WRX intentionally extends these systems instead of recreating them.
 
-</details>
+---
 
-<details>
-<summary><strong>Common dev commands</strong></summary>
+## Contribution protocol
+
+ST8WRX separates **activity**, **contribution**, and **ownership**.
+
+A lot of code is not automatically valuable. A lot of GPU time is not automatically ownership. An AI model generating 20,000 lines is not necessarily more valuable than a human making one architectural decision that saves the project.
+
+The canonical contribution flow is:
+
+```text
+Evidence → Attribution → Impact Assessment → Acceptance → Contribution Units
+```
+
+Current contribution classes include:
+
+- Intellectual / IP
+- Architecture
+- Engineering
+- Product / Design
+- Agent Work
+- Compute
+- Testing / Security / Review
+- Research / Data
+- Commercial / Distribution
+- Capital
+
+**Contribution Units** begin as non-transferable project accounting units. They are not automatically tokens, equity, or securities.
+
+The protocol primitives live in `crates/buzz-st8wrx`.
+
+---
+
+## BSV provenance foundation
+
+`crates/buzz-bsv` contains the first isolated BSV protocol primitives.
+
+Current foundation includes:
+
+- mainnet/testnet configuration
+- domain-separated project-scoped commitments
+- deterministic Merkle batching
+- inclusion-proof generation and verification
+- provider-independent broadcaster boundary
+
+BSV work is deliberately kept off the relay hot path.
+
+---
+
+## Product surfaces
+
+Working product hierarchy:
+
+| Surface | Purpose |
+|---|---|
+| **ST8 Projects** | project creation, teams, contribution state, launch path |
+| **ST8 Agents** | agent identities, execution, provenance, reputation |
+| **ST8 Compute** | pooled compute, jobs, metering, pricing, settlement |
+| **ST8 Ledger** | contribution receipts, decisions, project checkpoints, proofs |
+| **ST8 Market** | projects, products, agents, compute, APIs, licenses, bounties |
+| **ST8 Launch** | project economy, treasury, contracts, optional project assets |
+
+These names are product-architecture labels and may evolve as UX matures.
+
+---
+
+## Build status
+
+### Inherited and working from Buzz
+
+- relay, auth, signed event model
+- projects and Git
+- humans + agents
+- workflows
+- audit/search
+- desktop client
+- mobile client development
+- Huddles
+- Buzz Mesh shared compute
+- agent metrics and execution infrastructure
+
+### ST8WRX foundation completed
+
+- canonical architecture
+- BSV provenance primitives
+- deterministic contribution protocol primitives
+- project-scoped contribution model
+- brand and upstream strategy
+
+### Next vertical slice
+
+```text
+real Buzz project activity
+        ↓
+existing Git / agent / project evidence
+        ↓
+ST8WRX Contribution Record
+        ↓
+project acceptance decision
+        ↓
+Contribution Units
+        ↓
+BSV testnet anchor
+        ↓
+independently verifiable receipt
+```
+
+Then the same model extends to Buzz Mesh compute metering and settlement.
+
+---
+
+## Development
+
+The inherited Buzz developer workflow remains intact while ST8WRX is progressively integrated.
+
+Requirements include Docker and Hermit, or the pinned Rust/Node/pnpm/`just` toolchain.
 
 ```bash
-just setup          # Docker, migrations, desktop deps
-just relay          # Run the relay
-just dev            # Run the desktop app
-just build          # Build the Rust workspace
-just check          # fmt + clippy + desktop check
-just test-unit      # Unit tests (no infra required)
-just test           # Full suite (starts services if needed)
-just ci             # Everything CI runs
-just reset          # ⚠️  Wipe data + recreate
+git clone <this-repository>
+cd <repository>
+. ./bin/activate-hermit
+just setup
+just build
+just dev
 ```
 
-</details>
+Existing `BUZZ_*` environment variables and internal crate names remain for compatibility until a deliberate migration path is introduced. We will not rename internals merely for cosmetic consistency if doing so creates needless upstream merge churn.
+
+See [`docs/st8wrx/UPSTREAM.md`](docs/st8wrx/UPSTREAM.md).
 
 ---
 
-## What it is not
+## Fork lineage and license
 
-- Not blockchain. Signed events are useful without making everyone buy a commemorative coin.
-- Not an AI replacement plan. Buzz works best when humans stay in the loop and agents stay in the room.
-- Not finished. We will tell you what works and what doesn't.
+ST8WRX is derived from **Buzz**, originally developed by Block and released under the Apache License 2.0.
 
-**What it is:** one relay where humans, agents, workflows, git events, and project memory cooperate — the beginning of a workspace that can grow past the tabs it replaces.
+We preserve upstream history, licensing, and applicable attribution while developing ST8WRX as a distinct product and protocol layer.
+
+- Upstream Buzz: `block/buzz`
+- License: [`Apache-2.0`](LICENSE)
+- ST8WRX upstream policy: [`docs/st8wrx/UPSTREAM.md`](docs/st8wrx/UPSTREAM.md)
+
+The goal is to remain close enough to upstream to inherit strong engineering improvements without allowing upstream product branding to define ST8WRX.
 
 ---
+
+## Brand
+
+The public name is always **ST8WRX**.
+
+Do not rename it to StateWorks, ST8 Works, ST8Works, or another expansion in public product identity.
+
+Brand assets and usage rules live in [`docs/st8wrx/BRAND.md`](docs/st8wrx/BRAND.md).
 
 <p align="center">
-  <sub>Buzz 🐝</sub><br>
-  <sub>Apache 2.0 · Built by <a href="https://block.xyz">Block, Inc.</a></sub>
+  <img src="docs/assets/st8wrx-mark.svg" alt="ST8WRX mark" width="120">
 </p>
+
+<p align="center"><strong>Build together. Prove what you created.</strong></p>
