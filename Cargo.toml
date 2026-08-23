@@ -30,11 +30,9 @@ members = [
     "crates/buzz-voice",
     "crates/buzz-backend-kubernetes",
     "crates/buzz-datastore-tracing",
-    "crates/buzz-bsv",
-    "crates/buzz-st8wrx",
     "examples/countdown-bot",
 ]
-exclude = ["desktop/src-tauri"]
+exclude = ["desktop/src-tauri", "crates/buzz-bsv", "crates/buzz-st8wrx"]
 resolver = "2"
 
 [workspace.package]
@@ -149,8 +147,6 @@ buzz-sdk = { path = "crates/buzz-sdk" }
 buzz-ws-client = { path = "crates/buzz-ws-client" }
 buzz-relay-mesh = { path = "crates/buzz-relay-mesh" }
 buzz-datastore-tracing = { path = "crates/buzz-datastore-tracing" }
-buzz-bsv = { path = "crates/buzz-bsv" }
-buzz-st8wrx = { path = "crates/buzz-st8wrx" }
 
 # CI profile — builds the relay for desktop e2e. Dependencies keep full
 # release optimization (warm from main's cache; they carry the runtime hot
