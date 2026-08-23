@@ -9,6 +9,7 @@ members = [
     "crates/buzz-auth",
     "crates/buzz-search",
     "crates/buzz-audit",
+    "crates/buzz-bsv",
     "crates/buzz-acp",
     "crates/buzz-agent",
     "crates/sprig",
@@ -73,10 +74,10 @@ cron        = "0.16"
 # Observability
 tracing                     = "0.1"
 tracing-subscriber          = { version = "0.3", features = ["env-filter", "json"] }
-tracing-opentelemetry       = { version = "0.33" }
-opentelemetry               = { version = "0.32", features = ["trace"] }
-opentelemetry_sdk           = { version = "0.32", features = ["trace", "rt-tokio"] }
-opentelemetry-otlp          = { version = "0.32", default-features = false, features = ["trace", "grpc-tonic", "tls-ring"] }
+tracing-opentelemetry       = "0.33"
+opentelemetry               = "0.32"
+opentelemetry_sdk           = "0.32"
+opentelemetry-otlp          = "0.32"
 metrics             = "0.24"
 metrics-exporter-prometheus = "0.18"
 metrics-util        = "0.20"
@@ -128,6 +129,7 @@ buzz-auth = { path = "crates/buzz-auth" }
 buzz-pubsub = { path = "crates/buzz-pubsub" }
 buzz-search = { path = "crates/buzz-search" }
 buzz-audit = { path = "crates/buzz-audit" }
+buzz-bsv = { path = "crates/buzz-bsv" }
 buzz-workflow = { path = "crates/buzz-workflow" }
 buzz-media = { path = "crates/buzz-media" }
 buzz-sdk = { path = "crates/buzz-sdk" }
