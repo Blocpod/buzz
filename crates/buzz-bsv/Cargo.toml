@@ -1,0 +1,14 @@
+[package]
+name = "buzz-bsv"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Bitcoin SV provenance and settlement primitives for ST8WRX"
+
+[dependencies]
+serde = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+thiserror = { workspace = true }
