@@ -1,0 +1,14 @@
+[package]
+name = "buzz-st8wrx"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "ST8WRX project contribution and economy protocol primitives"
+
+[dependencies]
+serde = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+thiserror = { workspace = true }
