@@ -268,6 +268,37 @@ mod tests {
     }
 
     #[test]
+    fn proof_fails_if_project_scope_is_changed() {
+        let commitments = vec![event("11", "project-a"), event("22", "project-a")];
+        let batch = build_anchor_batch(&commitments, 10).unwrap();
+        let proof = build_merkle_proof(&commitments, 10, 0).unwrap();
+        let replayed = event("11", "project-b");
+        assert!(!verify_merkle_proof(&replayed, &proof, &batch.merkle_root).unwrap());
+    }
+
+    #[test]
+    fn proof_fails_if_sibling_is_tampered() {
+        let commitments = vec![event("11", "p"), event("22", "p")];
+        let batch = build_anchor_batch(&commitments, 10).unwrap();
+        let mut proof = build_merkle_proof(&commitments, 10, 0).unwrap();
+        proof.siblings[0] = "ff".repeat(32);
+        assert!(!verify_merkle_proof(&commitments[0], &proof, &batch.merkle_root).unwrap());
+    }
+
+    #[test]
+    fn proof_rejects_malformed_sibling() {
+        let commitment = event("11", "p");
+        let proof = MerkleProof {
+            leaf_index: 0,
+            siblings: vec!["not-a-hash".to_string()],
+        };
+        assert!(matches!(
+            verify_merkle_proof(&commitment, &proof, &"00".repeat(32)),
+            Err(BsvError::InvalidProofHash(_))
+        ));
+    }
+
+    #[test]
     fn rejects_empty_scope() {
         let result = build_anchor_batch(&[event("11", "")], 10);
         assert!(matches!(result, Err(BsvError::EmptyScope)));
