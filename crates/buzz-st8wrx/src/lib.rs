@@ -26,6 +26,23 @@ pub enum ContributionClass {
     Capital,
 }
 
+impl ContributionClass {
+    const fn protocol_code(self) -> u8 {
+        match self {
+            Self::Intellectual => 1,
+            Self::Architecture => 2,
+            Self::Engineering => 3,
+            Self::ProductDesign => 4,
+            Self::AgentWork => 5,
+            Self::Compute => 6,
+            Self::TestingSecurityReview => 7,
+            Self::ResearchData => 8,
+            Self::CommercialDistribution => 9,
+            Self::Capital => 10,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ContributorKind {
@@ -33,6 +50,17 @@ pub enum ContributorKind {
     Agent,
     ComputeNode,
     Organization,
+}
+
+impl ContributorKind {
+    const fn protocol_code(self) -> u8 {
+        match self {
+            Self::Human => 1,
+            Self::Agent => 2,
+            Self::ComputeNode => 3,
+            Self::Organization => 4,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -58,7 +86,8 @@ pub struct ContributionRecord {
     /// Human-readable summary. This is evidence context, not the authoritative
     /// artifact itself.
     pub summary: String,
-    /// Immutable references used to ground the claim.
+    /// Immutable references used to ground the claim. Digest construction treats
+    /// this as a set and sorts it canonically by `(kind, reference)`.
     pub evidence: Vec<EvidenceRef>,
 }
 
@@ -68,6 +97,16 @@ pub enum DecisionStatus {
     Accepted,
     Rejected,
     Adjusted,
+}
+
+impl DecisionStatus {
+    const fn protocol_code(self) -> u8 {
+        match self {
+            Self::Accepted => 1,
+            Self::Rejected => 2,
+            Self::Adjusted => 3,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -81,7 +120,8 @@ pub struct ContributionDecision {
     pub units: u64,
     /// Rule/model version used for the decision.
     pub policy_version: String,
-    /// Identities that approved/adjudicated the decision.
+    /// Identities that approved/adjudicated the decision. Digest construction
+    /// treats this as a set and sorts it canonically.
     pub approvers: Vec<String>,
     pub decided_at: i64,
     pub rationale: String,
@@ -165,14 +205,18 @@ pub fn contribution_digest(record: &ContributionRecord) -> Result<String, Protoc
     h.update(CONTRIBUTION_DOMAIN);
     put_str(&mut h, &record.project);
     put_str(&mut h, &record.contributor);
-    h.update([record.contributor_kind as u8]);
-    h.update([record.class as u8]);
+    h.update([record.contributor_kind.protocol_code()]);
+    h.update([record.class.protocol_code()]);
     h.update(record.created_at.to_be_bytes());
     put_str(&mut h, &record.summary);
-    h.update((record.evidence.len() as u64).to_be_bytes());
-    for evidence in &record.evidence {
-        put_str(&mut h, &evidence.kind);
-        put_str(&mut h, &evidence.reference);
+
+    let mut evidence = record.evidence.clone();
+    evidence.sort_by(|a, b| (&a.kind, &a.reference).cmp(&(&b.kind, &b.reference)));
+    evidence.dedup_by(|a, b| a.kind == b.kind && a.reference == b.reference);
+    h.update((evidence.len() as u64).to_be_bytes());
+    for item in &evidence {
+        put_str(&mut h, &item.kind);
+        put_str(&mut h, &item.reference);
     }
     Ok(hex::encode(h.finalize()))
 }
@@ -183,11 +227,15 @@ pub fn decision_digest(decision: &ContributionDecision) -> Result<String, Protoc
     h.update(DECISION_DOMAIN);
     put_str(&mut h, &decision.contribution_id);
     put_str(&mut h, &decision.project);
-    h.update([decision.status as u8]);
+    h.update([decision.status.protocol_code()]);
     h.update(decision.units.to_be_bytes());
     put_str(&mut h, &decision.policy_version);
-    h.update((decision.approvers.len() as u64).to_be_bytes());
-    for approver in &decision.approvers {
+
+    let mut approvers = decision.approvers.clone();
+    approvers.sort();
+    approvers.dedup();
+    h.update((approvers.len() as u64).to_be_bytes());
+    for approver in &approvers {
         put_str(&mut h, approver);
     }
     h.update(decision.decided_at.to_be_bytes());
@@ -231,6 +279,35 @@ mod tests {
         let mut b = a.clone();
         b.project = "30621:alice:other".into();
         assert_ne!(contribution_digest(&a).unwrap(), contribution_digest(&b).unwrap());
+    }
+
+    #[test]
+    fn evidence_order_does_not_change_contribution_id() {
+        let mut a = contribution();
+        a.evidence.push(EvidenceRef {
+            kind: "nostr_event".into(),
+            reference: "def456".into(),
+        });
+        let mut b = a.clone();
+        b.evidence.reverse();
+        assert_eq!(contribution_digest(&a).unwrap(), contribution_digest(&b).unwrap());
+    }
+
+    #[test]
+    fn approver_order_does_not_change_decision_id() {
+        let base = ContributionDecision {
+            contribution_id: "11".repeat(32),
+            project: "p".into(),
+            status: DecisionStatus::Accepted,
+            units: 10,
+            policy_version: "v1".into(),
+            approvers: vec!["alice".into(), "bob".into()],
+            decided_at: 1,
+            rationale: "accepted".into(),
+        };
+        let mut reversed = base.clone();
+        reversed.approvers.reverse();
+        assert_eq!(decision_digest(&base).unwrap(), decision_digest(&reversed).unwrap());
     }
 
     #[test]
